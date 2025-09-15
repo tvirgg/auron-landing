@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply text-white;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(244, 114, 182, 0.35), transparent 60%),
+    radial-gradient(1000px 500px at 90% -20%, rgba(192, 132, 252, 0.20), transparent 60%),
+    #000;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #171717;
+}
+
+.bg-radial {
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(244, 114, 182, 0.35), transparent 60%),
+    radial-gradient(1000px 500px at 80% -20%, rgba(192, 132, 252, 0.20), transparent 60%);
+}
+
+@layer components {
+  .card {
+    @apply bg-neutral-800 border border-neutral-700 rounded-xl2 shadow-soft;
+  }
+  
+  .hr {
+    @apply border-t border-neutral-800;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+  }
+  
+  /* ----- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ----- */
+  .btn-primary {
+    @apply 
+      /* 1. Взят ваш ИСХОДНЫЙ (светлый) градиент и сделан постоянным */
+      bg-gradient-to-r from-purple-700 via-purple-800 to-purple-900 text-white
+      
+      /* 2. Добавлены классы для анимации переливания и блика */
+      animate-gradient animate-shine
+      
+      /* 3. При наведении кнопка теперь не меняет цвет, а становится ярче и больше */
+      hover:scale-105 hover:brightness-110 active:scale-100;
+  }
+  
+  .btn-ghost {
+    @apply bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700;
+  }
+}
+
+.mono {
+  @apply font-mono text-sm;
+}
+
+.section {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.scroller__inner {
+  animation: scroll 10s linear infinite;
+}
+
+@keyframes scroll {
+  to {
+    transform: translateX(calc(-50% - 1rem));
+  }
+}
+
+.svg-white-filter {
+  filter: brightness(0) saturate(100%) invert(100%);
+}
+
+@layer utilities {
+  /* Анимация для плавного переливания градиента */
+  @keyframes background-pan {
+    0% { background-position: 0% center; }
+    50% { background-position: 100% center; }
+    100% { background-position: 0% center; }
+  }
+
+  /* Анимация для эффекта "блика" */
+  @keyframes shine-pan {
+    from { transform: translateX(-100%) skewX(-20deg); }
+    to { transform: translateX(200%) skewX(-20deg); }
+  }
+
+  /* Утилитарные классы для применения анимаций */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: background-pan 8s linear infinite;
+  }
+  
+  .animate-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .animate-shine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 80%
+    );
+    transform: translateX(-100%) skewX(-20deg);
+    animation: shine-pan 3.5s ease-in-out infinite;
+  }
+}
+.scroller__inner {
+  /* Эти стили уже применяются через классы Tailwind (flex, gap-8) */
+  /* но для ясности я их здесь оставляю. */
+  display: flex;
+  gap: 2rem; /* Соответствует gap-8 */
+}
+
+/* Применяем анимацию, только если есть атрибут data-animated */
+.scroller[data-animated="true"] .scroller__inner {
+  /* САМОЕ ВАЖНОЕ: Заставляет контейнер быть шириной своего контента */
+  width: max-content;
+  animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* 
+      Сдвигаем контейнер влево ровно на половину его ширины.
+      Поскольку внутри две одинаковые группы блоков, вторая группа
+      встает точно на место первой, создавая бесшовный цикл.
+    */
+    transform: translateX(-50%);
+  }
+}
